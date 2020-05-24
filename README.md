@@ -1,6 +1,11 @@
 # WPF Editor Library
 Simple editor-like functionality for a layer-based editor software.
 
+# Resources that helped me create this
+
+ * [WPF Diagram Designer Tutorial](https://www.codeproject.com/Articles/22952/WPF-Diagram-Designer-Part-1)
+ * [Material Design Icons](https://materialdesignicons.com/)
+
 # Q: Why did you make this?
 I've started this library because one of my projects required me to have a lot of editor-like features, like the one presented in the example application. I didn't want the original application to be cluttered with that kind of functionality, so I've started factoring it out.
 
