@@ -1,0 +1,181 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:Nfh.EditorLibrary.Controls"
+                    xmlns:local="clr-namespace:Nfh.EditorLibrary.Resources" 
+                    xmlns:converters="clr-namespace:Nfh.EditorLibrary.Converters">
+
+    <converters:AndBooleanConverter x:Key="ConjunctionBooleanConverter"/>
+
+    <!-- Move thumb with a little hover effect -->
+    <ControlTemplate x:Key="MoveThumbTemplate" TargetType="{x:Type controls:MoveThumb}">
+        <!-- Hitbox -->
+        <Rectangle>
+            <Rectangle.Style>
+                <Style TargetType="{x:Type Rectangle}">
+                    <Setter Property="Fill" Value="Transparent"/>
+                    <!-- TODO: Not the best solution! -->
+                    <!-- The best would be if the visual could be on top! -->
+                    <Setter Property="ToolTip" Value="{Binding Visual.ToolTip}"/>
+
+                    <Style.Triggers>
+                        <!-- Hover effect -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Fill">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="Black" Opacity="0.1"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Rectangle.Style>
+        </Rectangle>
+    </ControlTemplate>
+
+    <!-- Move thumb style -->
+    <Style x:Key="MoveThumbStyle" TargetType="{x:Type controls:MoveThumb}">
+        <Setter Property="ItemsControl.Cursor" Value="SizeAll"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        
+        <!-- Disabled cursor when not movable -->
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding CanMove}" Value="False">
+                <Setter Property="ItemsControl.Cursor" Value="No"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Layer.IsLocked}" Value="True">
+                <Setter Property="ItemsControl.Cursor" Value="No"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Base style for resizing thumbs -->
+    <Style x:Key="ResizeThumbStyle" TargetType="{x:Type controls:ResizeThumb}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        
+        <!-- Resizing thumbs should only be visible when the item is selected on the current layer -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Rectangle x:Name="ResizeLine" Margin="1" Fill="Transparent"/>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Value="True">
+                            <DataTrigger.Binding>
+                                <MultiBinding Converter="{StaticResource ConjunctionBooleanConverter}">
+                                    <Binding Path="IsSelected"/>
+                                    <Binding Path="Layer.IsSelected"/>
+                                </MultiBinding>
+                            </DataTrigger.Binding>
+                            <Setter TargetName="ResizeLine" Property="Fill" Value="Red"/>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <!-- Hide resizers when locked or can't resize -->
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding CanResize}" Value="False">
+                <Setter Property="ItemsControl.Visibility" Value="Hidden"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Layer.IsLocked}" Value="True">
+                <Setter Property="ItemsControl.Visibility" Value="Hidden"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    
+    <!-- #################### Different positioned resize thumbs ############################ -->
+    
+    <Style x:Key="TopResizeThumbStyle" TargetType="{x:Type controls:ResizeThumb}"
+           BasedOn="{StaticResource ResizeThumbStyle}">
+        <Setter Property="Height" Value="3"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        <Setter Property="ItemsControl.Cursor" Value="SizeNS"/>
+    </Style>
+
+    <Style x:Key="BottomResizeThumbStyle" TargetType="{x:Type controls:ResizeThumb}"
+           BasedOn="{StaticResource TopResizeThumbStyle}">
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+    </Style>
+
+    <Style x:Key="LeftResizeThumbStyle" TargetType="{x:Type controls:ResizeThumb}"
+           BasedOn="{StaticResource ResizeThumbStyle}">
+        <Setter Property="Width" Value="3"/>
+        <Setter Property="VerticalAlignment" Value="Stretch"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="ItemsControl.Cursor" Value="SizeWE"/>
+    </Style>
+
+    <Style x:Key="RightResizeThumbStyle" TargetType="{x:Type controls:ResizeThumb}"
+           BasedOn="{StaticResource LeftResizeThumbStyle}">
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
+
+    <Style x:Key="TopLeftResizeThumbStyle" TargetType="{x:Type controls:ResizeThumb}"
+           BasedOn="{StaticResource ResizeThumbStyle}">
+        <Setter Property="Width" Value="7"/>
+        <Setter Property="Height" Value="7"/>
+        <Setter Property="Margin" Value="-2"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="ItemsControl.Cursor" Value="SizeNWSE"/>
+    </Style>
+
+    <Style x:Key="BottomLeftResizeThumbStyle" TargetType="{x:Type controls:ResizeThumb}"
+           BasedOn="{StaticResource TopLeftResizeThumbStyle}">
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="ItemsControl.Cursor" Value="SizeNESW"/>
+    </Style>
+
+    <Style x:Key="TopRightResizeThumbStyle" TargetType="{x:Type controls:ResizeThumb}"
+           BasedOn="{StaticResource TopLeftResizeThumbStyle}">
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+        <Setter Property="ItemsControl.Cursor" Value="SizeNESW"/>
+    </Style>
+
+    <Style x:Key="BottomRightResizeThumbStyle" TargetType="{x:Type controls:ResizeThumb}"
+           BasedOn="{StaticResource TopLeftResizeThumbStyle}">
+        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="HorizontalAlignment" Value="Right"/>
+    </Style>
+    
+    <!-- #################################################################################### -->
+
+    <!-- An editor item in the canvas -->
+    <Style x:Key="EditorItemStyle" TargetType="ContentControl">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContentControl">
+                    <Grid>
+                        <!-- Show what's inside the content control -->
+                        <ContentPresenter Content="{TemplateBinding ContentControl.Content}"/>
+                        
+                        <!-- Resize thumbs -->
+                        <Grid Margin="-1">
+                            <controls:MoveThumb  
+                                Template="{StaticResource MoveThumbTemplate}"
+                                Style="{StaticResource MoveThumbStyle}"/>
+
+                            <controls:ResizeThumb Style="{StaticResource TopResizeThumbStyle}"/>
+                            <controls:ResizeThumb Style="{StaticResource BottomResizeThumbStyle}"/>
+                            <controls:ResizeThumb Style="{StaticResource LeftResizeThumbStyle}"/>
+                            <controls:ResizeThumb Style="{StaticResource RightResizeThumbStyle}"/>
+                            <controls:ResizeThumb Style="{StaticResource TopLeftResizeThumbStyle}"/>
+                            <controls:ResizeThumb Style="{StaticResource TopRightResizeThumbStyle}"/>
+                            <controls:ResizeThumb Style="{StaticResource BottomLeftResizeThumbStyle}"/>
+                            <controls:ResizeThumb Style="{StaticResource BottomRightResizeThumbStyle}"/>
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Item layout in the canvas -->
+    <Style x:Key="EditorItemLayoutStyle">
+        <Setter Property="Canvas.Left" Value="{Binding X}"/>
+        <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+        <Setter Property="FrameworkElement.Width" Value="{Binding Width}"/>
+        <Setter Property="FrameworkElement.Height" Value="{Binding Height}"/>
+    </Style>
+</ResourceDictionary>
